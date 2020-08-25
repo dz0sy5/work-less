@@ -6,7 +6,7 @@
  # want an automatic reboot to occur while this script is executing.
  #
  # Execute this script:
- # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('http://192.166.1.15:8000/InitT1VM.ps1'))
+ # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://github.com/dz0sy5/work-less/blob/master/D365FFo/DevT1/InitT1VM.ps1'))
  #
  # Tested on Windows 10 and Windows Server 2016
  # Tested on F&O 7.3 OneBox and F&O 8.1 OneBox and a 10.0.11 Azure Cloud Hosted Environment (CHE) deployed from LCS
@@ -15,8 +15,9 @@
  #  Download useful SQL and PowerShell scripts, using Git?
  #>
  
- #set tls 1.2
+#set tls 1.2
  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 #region Install additional apps using Chocolatey
 
 If(Test-Path -Path "$env:ProgramData\Chocolatey") {
@@ -44,7 +45,6 @@ Else {
 
 
     $packages = @(
-        #"adobereader" - TODO: test for compatibilitiy on Windows Server 2016
         #"microsoftazurestorageexplorer"  - TODO: The current package has a bad checksum, test again later
         #"azurepowershell"
         #"azure-cli"
