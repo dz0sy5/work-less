@@ -1,4 +1,4 @@
-﻿﻿<# Prepare-D365DevelopmentMachine
+﻿﻿<# Prepare-D365VM
  #
  # Preparation:
  # So that the installations do not step on each other: First run windows updates, also
@@ -12,15 +12,15 @@
  # Tested on F&O 7.3 OneBox and F&O 8.1 OneBox and a 10.0.11 Azure Cloud Hosted Environment (CHE) deployed from LCS
  #
  # Ideas:
- #  Download useful SQL and PowerShell scripts, using Git?
+ #  
  #>
  
 #set tls 1.2
- [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 #region Install additional apps using Chocolatey
 
-If(Test-Path -Path "$env:ProgramData\Chocolatey") {
+If (Test-Path -Path "$env:ProgramData\Chocolatey") {
     choco upgrade chocolatey -y -r
     choco upgrade all --ignore-checksums -y -r
 }
@@ -36,10 +36,10 @@ Else {
     #   This part is copied from https://chocolatey.org/install.ps1
     $chocoPath = [Environment]::GetEnvironmentVariable("ChocolateyInstall")
     if ($chocoPath -eq $null -or $chocoPath -eq '') {
-      $chocoPath = "$env:ALLUSERSPROFILE\Chocolatey"
+        $chocoPath = "$env:ALLUSERSPROFILE\Chocolatey"
     }
     if (!(Test-Path ($chocoPath))) {
-      $chocoPath = "$env:SYSTEMDRIVE\ProgramData\Chocolatey"
+        $chocoPath = "$env:SYSTEMDRIVE\ProgramData\Chocolatey"
     }
     $chocoExePath = Join-Path $chocoPath 'bin\choco.exe'
 
@@ -107,7 +107,7 @@ Add-D365WindowsDefenderRules -Silent
 
 # Disable Windows Telemetry (requires a reboot to take effect)
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWord -Value 0
-Get-Service DiagTrack,Dmwappushservice | Stop-Service | Set-Service -StartupType Disabled
+Get-Service DiagTrack, Dmwappushservice | Stop-Service | Set-Service -StartupType Disabled
 
 # Start Menu: Disable Bing Search Results
 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search -Name BingSearchEnabled -Type DWord -Value 0
@@ -115,20 +115,20 @@ Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search -N
 
 # Start Menu: Disable Cortana
 If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings")) {
-	New-Item -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Force | Out-Null
+    New-Item -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Force | Out-Null
 }
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Type DWord -Value 0
 If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization")) {
-	New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Force | Out-Null
+    New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Force | Out-Null
 }
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitTextCollection" -Type DWord -Value 1
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitInkCollection" -Type DWord -Value 1
 If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
-	New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
+    New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
 }
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Name "HarvestContacts" -Type DWord -Value 0
 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search")) {
-	New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
 }
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
 
@@ -139,12 +139,11 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search
 
 Function Execute-Sql {
     Param(
-        [Parameter(Mandatory=$true)][string]$server,
-        [Parameter(Mandatory=$true)][string]$database,
-        [Parameter(Mandatory=$true)][string]$command
+        [Parameter(Mandatory = $true)][string]$server,
+        [Parameter(Mandatory = $true)][string]$database,
+        [Parameter(Mandatory = $true)][string]$command
     )
-    Process
-    {
+    Process {
         $scon = New-Object System.Data.SqlClient.SqlConnection
         $scon.ConnectionString = "Data Source=$server;Initial Catalog=$database;Integrated Security=true"
         
@@ -153,17 +152,14 @@ Function Execute-Sql {
         $cmd.CommandTimeout = 0
         $cmd.CommandText = $command
 
-        try
-        {
+        try {
             $scon.Open()
             $cmd.ExecuteNonQuery()
         }
-        catch [Exception]
-        {
+        catch [Exception] {
             Write-Warning $_.Exception.Message
         }
-        finally
-        {
+        finally {
             $scon.Dispose()
             $cmd.Dispose()
         }
@@ -194,7 +190,8 @@ If (Test-Path “HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQ
         @OnlyModifiedStatistics = 'Y'"
 
     Execute-Sql -server "." -database "master" -command $sql
-} Else {
+}
+Else {
     Write-Verbose “SQL not installed.  Skipped Ola Hallengrens index optimization”
 }
 
@@ -277,7 +274,7 @@ Function Start-DiskDefrag {
     [CmdletBinding()]
     [OutputType([Object])]
     Param (
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)] [string] $DriveLetter, 
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)] [string] $DriveLetter, 
         [Parameter()] [switch] $Force
     )
     
@@ -306,7 +303,7 @@ Function Start-DiskDefrag {
             Write-Verbose "Checking free space for volume $driveletter"
             
             #Check the free space on the volume is greater than 15% of the total volume size, if it isn't write an error
-            if (($Volume.FreeSpace /1GB) -lt ($Volume.Capacity / 1GB) * 0.15) {
+            if (($Volume.FreeSpace / 1GB) -lt ($Volume.Capacity / 1GB) * 0.15) {
                 Write-Error "Volume $Driveletter does not have sufficient free space to allow a disk defragmentation, to perform a disk defragmentation either free up some space on the volume or use Start-DiskDefrag with the -force switch"
             }
             Else {
@@ -322,16 +319,16 @@ Function Start-DiskDefrag {
         
         #Check the defragmentation results and inform the user of any errors
         Switch ($Defrag.ReturnValue) {
-            0  { Write-Verbose "Defragmentation completed successfully..." }
-            1  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Access Denied" }
-            2  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Defragmentation is not supported for this volume" }
-            3  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Volume dirty bit is set" }
-            4  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Insufficient disk space" }
-            5  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Corrupt master file table detected" }
-            6  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: The operation was cancelled" }
-            7  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: The operation was cancelled" }
-            8  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: A disk defragmentation is already in process" }
-            9  { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Unable to connect to the defragmentation engine" }
+            0 { Write-Verbose "Defragmentation completed successfully..." }
+            1 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Access Denied" }
+            2 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Defragmentation is not supported for this volume" }
+            3 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Volume dirty bit is set" }
+            4 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Insufficient disk space" }
+            5 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Corrupt master file table detected" }
+            6 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: The operation was cancelled" }
+            7 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: The operation was cancelled" }
+            8 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: A disk defragmentation is already in process" }
+            9 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Unable to connect to the defragmentation engine" }
             10 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: A defragmentation engine error occurred" }
             11 { Write-Error -Message "Defragmentation of volume $DriveLetter failed: Unknown error" }
         }
@@ -351,3 +348,5 @@ ForEach ($res in Get-Partition) {
 }
 
 #endregion
+
+
