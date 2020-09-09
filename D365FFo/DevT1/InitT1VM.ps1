@@ -1,6 +1,9 @@
-﻿﻿<# Prepare-D365VM
+﻿﻿<# Init-D365VM
  #
  # Preparation:
+ #  Windows updated
+ #  Antimalware scan
+    
  # So that the installations do not step on each other: First run windows updates, also
  # wait for antimalware to run scan...otherwise this will take a long time and we do not
  # want an automatic reboot to occur while this script is executing.
@@ -8,11 +11,11 @@
  # Execute this script:
  # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
  #
- # Tested on Windows 10 and Windows Server 2016
- # Tested on F&O 7.3 OneBox and F&O 8.1 OneBox and a 10.0.11 Azure Cloud Hosted Environment (CHE) deployed from LCS
- #
- # Ideas:
- #  
+ #TOdo:
+ #  Change Hostname 
+ #  Check the static IP config
+ #  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
+ #  Logoff Icon copy it to public Desktop
  #>
  
 #set tls 1.2
@@ -213,7 +216,7 @@ If ($what) {
 Write-Host "Setting power settings to High Performance"
 powercfg.exe /SetActive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 
-# Create Logoff Icon
+# Create Logoff Icon and copy it to public Desktop
 Write-Host “Creating logoff icon on desktop of the current user”
 $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($env:HOMEDRIVE + $env:HOMEPATH + "\Desktop\logoff.lnk")
