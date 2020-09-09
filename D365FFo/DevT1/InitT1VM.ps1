@@ -6,7 +6,7 @@
  # want an automatic reboot to occur while this script is executing.
  #
  # Execute this script:
- # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://github.com/dz0sy5/work-less/blob/master/D365FFo/DevT1/InitT1VM.ps1'))
+ # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
  #
  # Tested on Windows 10 and Windows Server 2016
  # Tested on F&O 7.3 OneBox and F&O 8.1 OneBox and a 10.0.11 Azure Cloud Hosted Environment (CHE) deployed from LCS
@@ -16,6 +16,7 @@
  #>
  
 #set tls 1.2
+Write-Host "Update the TLS settings"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 #region Install additional apps using Chocolatey
@@ -221,6 +222,36 @@ $Shortcut.Save()
 
 #endregion
 
+#region Local User Policy
+
+# Set the password to never expire
+Get-WmiObject Win32_UserAccount -filter "LocalAccount=True" | ? {$_.SID -Like "S-1-5-21-*-500"} | Set-LocalUser -PasswordNeverExpires 1
+
+# Disable changing the password
+$registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+$name = "DisableChangePassword"
+$value = "1"
+
+If (!(Test-Path $registryPath))
+{
+    New-Item -Path $registryPath -Force | Out-Null
+    New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWORD -Force | Out-Null
+}
+Else
+{
+    $passwordChangeRegKey = Get-ItemProperty -Path $registryPath -Name $Name -ErrorAction SilentlyContinue
+
+    If (-Not $passwordChangeRegKey)
+    {
+        New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWORD -Force | Out-Null
+    }
+    Else
+    {
+        Set-ItemProperty -Path $registryPath -Name $name -Value $value
+    }
+}
+
+#endregion
 
 #region Configure Windows Updates when Windows 10
 
