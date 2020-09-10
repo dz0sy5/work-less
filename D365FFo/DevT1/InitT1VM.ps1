@@ -1,4 +1,4 @@
-﻿﻿<#Init-D365VM
+﻿﻿#Init-D365VM
  #
  # Preparation:
  #  Windows updated
@@ -17,7 +17,9 @@
  #  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
  #  Logoff Icon copy it to public Desktop
  # BUILD VM registry configuration
-Windows Registry Editor Version 5.00
+
+ <#
+ Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
 "DynamicsSDK"="C:\\DynamicsSDK"
