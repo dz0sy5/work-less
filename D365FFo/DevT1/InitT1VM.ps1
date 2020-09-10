@@ -1,4 +1,4 @@
-﻿﻿<# Init-D365VM
+﻿﻿<#Init-D365VM
  #
  # Preparation:
  #  Windows updated
@@ -16,6 +16,19 @@
  #  Check the static IP config
  #  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
  #  Logoff Icon copy it to public Desktop
+ # BUILD VM registry configuration
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
+"DynamicsSDK"="C:\\DynamicsSDK"
+"TeamFoundationServerUrl"="https://dev.azure.com/0dzSy5"
+"AosWebsiteName"="AOSService"
+"BinariesPath"="C:\\AOSService\\PackagesLocalDirectory\\Bin"
+"MetadataPath"="C:\\AOSService\\PackagesLocalDirectory"
+"PackagesPath"="C:\\AOSService\\PackagesLocalDirectory"
+"DatabaseName"="AxDB"
+"DatabaseServer"="localhost"
+"BackupPath"="C:\\DynamicsBackup"
  #>
  
 #set tls 1.2
