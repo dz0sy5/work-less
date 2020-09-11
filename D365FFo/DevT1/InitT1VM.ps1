@@ -1,10 +1,6 @@
 ﻿﻿# Preparation:
 #  Windows updated
 #  Antimalware scan
-    
-# So that the installations do not step on each other: First run windows updates, also
-# wait for antimalware to run scan...otherwise this will take a long time and we do not
-# want an automatic reboot to occur while this script is executing.
 #
 # Execute this script:
 # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
@@ -15,6 +11,7 @@
 #  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
 #  Logoff Icon copy it to public Desktop
 #  BUILD VM registry configuration
+# add ENV path to the EnvironmentVariablepath
 
 <#
  Windows Registry Editor Version 5.00
@@ -35,7 +32,7 @@
 
 $Owner = 'dz0sy5';
 $Repository = 'work-less';
-$Path = 'DevTools';
+$Path = 'D365FFo/DevT1/DevTools';
 $DestinationPath = 'C:\Scripts'
 
 #endregion
@@ -43,6 +40,7 @@ $DestinationPath = 'C:\Scripts'
 #set tls 1.2
 Write-Host "Update the TLS settings"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 
 #region Functions to be used by the script
 
