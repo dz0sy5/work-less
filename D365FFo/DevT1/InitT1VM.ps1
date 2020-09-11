@@ -1,6 +1,4 @@
-﻿﻿#Init-D365VM
- #
- # Preparation:
+﻿﻿ # Preparation:
  #  Windows updated
  #  Antimalware scan
     
@@ -11,12 +9,12 @@
  # Execute this script:
  # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
  #
- #TOdo:
+ #ToDo:
  #  Change Hostname 
  #  Check the static IP config
  #  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
  #  Logoff Icon copy it to public Desktop
- # BUILD VM registry configuration
+ #  BUILD VM registry configuration
 
  <#
  Windows Registry Editor Version 5.00
@@ -33,9 +31,68 @@
 "BackupPath"="C:\\DynamicsBackup"
  #>
  
-#set tls 1.2
+#region Vars
+
+$Owner = 'dz0sy5';
+$Repository = 'work-less';
+$Path = 'DevTools';
+$DestinationPath = 'C:\Scripts'
+
+#endregion
+
+ #set tls 1.2
 Write-Host "Update the TLS settings"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+#region Functions to be used by the script
+
+function DownloadFilesFromGitHub {
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$Owner,
+        [Parameter(Mandatory=$true)]
+        [string]$Repository,
+        [Parameter(Mandatory=$true)]
+        [string]$Path,
+        [Parameter(Mandatory=$true)]
+        [string]$DestinationPath
+        )
+    
+        $baseUri = "https://api.github.com/"
+        $args = "repos/$Owner/$Repository/contents/$Path"
+        $wr = Invoke-WebRequest -Uri $($baseuri+$args)
+        $objects = $wr.Content | ConvertFrom-Json
+        $files = $objects | where {$_.type -eq "file"} | Select -exp download_url
+        $directories = $objects | where {$_.type -eq "dir"}
+        
+        $directories | ForEach-Object { 
+            DownloadFilesFromRepo -Owner $Owner -Repository $Repository -Path $_.path -DestinationPath $($DestinationPath+$_.name)
+        }
+    
+        
+        if (-not (Test-Path $DestinationPath)) {
+            # Destination path does not exist, let's create it
+            try {
+                New-Item -Path $DestinationPath -ItemType Directory -ErrorAction Stop
+            } catch {
+                throw "Could not create path '$DestinationPath'!"
+            }
+        }
+    
+        foreach ($file in $files) {
+            $fileDestination = Join-Path $DestinationPath (Split-Path $file -Leaf)
+            try {
+                Invoke-WebRequest -Uri $file -OutFile $fileDestination -ErrorAction Stop -Verbose
+                "Grabbed '$($file)' to '$fileDestination'"
+            } catch {
+                throw "Unable to download '$($file.path)'"
+            }
+        }
+    
+    }
+
+
+#endregion
 
 #region Install additional apps using Chocolatey
 
@@ -395,6 +452,13 @@ ForEach ($res in Get-Partition) {
         Start-DiskDefrag $dl
     }
 }
+
+#endregion
+
+
+#region Download usefull powershell scripts tools 
+
+DownloadFilesFromGitHub -Owner $Owner -Repository $Repository -Path $Path -DestinationPath $DestinationPath
 
 #endregion
 
