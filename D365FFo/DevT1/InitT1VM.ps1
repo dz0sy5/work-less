@@ -1,22 +1,22 @@
-﻿﻿ # Preparation:
- #  Windows updated
- #  Antimalware scan
+﻿﻿# Preparation:
+#  Windows updated
+#  Antimalware scan
     
- # So that the installations do not step on each other: First run windows updates, also
- # wait for antimalware to run scan...otherwise this will take a long time and we do not
- # want an automatic reboot to occur while this script is executing.
- #
- # Execute this script:
- # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
- #
- #ToDo:
- #  Change Hostname 
- #  Check the static IP config
- #  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
- #  Logoff Icon copy it to public Desktop
- #  BUILD VM registry configuration
+# So that the installations do not step on each other: First run windows updates, also
+# wait for antimalware to run scan...otherwise this will take a long time and we do not
+# want an automatic reboot to occur while this script is executing.
+#
+# Execute this script:
+# Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
+#
+#ToDo:
+#  Change Hostname 
+#  Check the static IP config
+#  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
+#  Logoff Icon copy it to public Desktop
+#  BUILD VM registry configuration
 
- <#
+<#
  Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
@@ -40,7 +40,7 @@ $DestinationPath = 'C:\Scripts'
 
 #endregion
 
- #set tls 1.2
+#set tls 1.2
 Write-Host "Update the TLS settings"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -48,48 +48,50 @@ Write-Host "Update the TLS settings"
 
 function DownloadFilesFromGitHub {
     Param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$Owner,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$Repository,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$Path,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$DestinationPath
-        )
+    )
     
-        $baseUri = "https://api.github.com/"
-        $args = "repos/$Owner/$Repository/contents/$Path"
-        $wr = Invoke-WebRequest -Uri $($baseuri+$args)
-        $objects = $wr.Content | ConvertFrom-Json
-        $files = $objects | where {$_.type -eq "file"} | Select -exp download_url
-        $directories = $objects | where {$_.type -eq "dir"}
+    $baseUri = "https://api.github.com/"
+    $args = "repos/$Owner/$Repository/contents/$Path"
+    $wr = Invoke-WebRequest -Uri $($baseuri + $args)
+    $objects = $wr.Content | ConvertFrom-Json
+    $files = $objects | where { $_.type -eq "file" } | Select -exp download_url
+    $directories = $objects | where { $_.type -eq "dir" }
         
-        $directories | ForEach-Object { 
-            DownloadFilesFromRepo -Owner $Owner -Repository $Repository -Path $_.path -DestinationPath $($DestinationPath+$_.name)
-        }
-    
-        
-        if (-not (Test-Path $DestinationPath)) {
-            # Destination path does not exist, let's create it
-            try {
-                New-Item -Path $DestinationPath -ItemType Directory -ErrorAction Stop
-            } catch {
-                throw "Could not create path '$DestinationPath'!"
-            }
-        }
-    
-        foreach ($file in $files) {
-            $fileDestination = Join-Path $DestinationPath (Split-Path $file -Leaf)
-            try {
-                Invoke-WebRequest -Uri $file -OutFile $fileDestination -ErrorAction Stop -Verbose
-                "Grabbed '$($file)' to '$fileDestination'"
-            } catch {
-                throw "Unable to download '$($file.path)'"
-            }
-        }
-    
+    $directories | ForEach-Object { 
+        DownloadFilesFromRepo -Owner $Owner -Repository $Repository -Path $_.path -DestinationPath $($DestinationPath + $_.name)
     }
+    
+        
+    if (-not (Test-Path $DestinationPath)) {
+        # Destination path does not exist, let's create it
+        try {
+            New-Item -Path $DestinationPath -ItemType Directory -ErrorAction Stop
+        }
+        catch {
+            throw "Could not create path '$DestinationPath'!"
+        }
+    }
+    
+    foreach ($file in $files) {
+        $fileDestination = Join-Path $DestinationPath (Split-Path $file -Leaf)
+        try {
+            Invoke-WebRequest -Uri $file -OutFile $fileDestination -ErrorAction Stop -Verbose
+            "Grabbed '$($file)' to '$fileDestination'"
+        }
+        catch {
+            throw "Unable to download '$($file.path)'"
+        }
+    }
+    
+}
 
 
 #endregion
@@ -300,28 +302,24 @@ $Shortcut.Save()
 #region Local User Policy
 
 # Set the password to never expire
-Get-WmiObject Win32_UserAccount -filter "LocalAccount=True" | ? {$_.SID -Like "S-1-5-21-*-500"} | Set-LocalUser -PasswordNeverExpires 1
+Get-WmiObject Win32_UserAccount -filter "LocalAccount=True" | ? { $_.SID -Like "S-1-5-21-*-500" } | Set-LocalUser -PasswordNeverExpires 1
 
 # Disable changing the password
 $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
 $name = "DisableChangePassword"
 $value = "1"
 
-If (!(Test-Path $registryPath))
-{
+If (!(Test-Path $registryPath)) {
     New-Item -Path $registryPath -Force | Out-Null
     New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWORD -Force | Out-Null
 }
-Else
-{
+Else {
     $passwordChangeRegKey = Get-ItemProperty -Path $registryPath -Name $Name -ErrorAction SilentlyContinue
 
-    If (-Not $passwordChangeRegKey)
-    {
+    If (-Not $passwordChangeRegKey) {
         New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWORD -Force | Out-Null
     }
-    Else
-    {
+    Else {
         Set-ItemProperty -Path $registryPath -Name $name -Value $value
     }
 }
