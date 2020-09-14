@@ -15,18 +15,18 @@
 # add ENV path to the EnvironmentVariablepath
 
 
- Windows Registry Editor Version 5.00
+#  Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
-"DynamicsSDK"="C:\\DynamicsSDK"
-"TeamFoundationServerUrl"="https://dev.azure.com/0dzSy5"
-"AosWebsiteName"="AOSService"
-"BinariesPath"="C:\\AOSService\\PackagesLocalDirectory\\Bin"
-"MetadataPath"="C:\\AOSService\\PackagesLocalDirectory"
-"PackagesPath"="C:\\AOSService\\PackagesLocalDirectory"
-"DatabaseName"="AxDB"
-"DatabaseServer"="localhost"
-"BackupPath"="C:\\DynamicsBackup"
+# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
+# "DynamicsSDK"="C:\\DynamicsSDK"
+# "TeamFoundationServerUrl"="https://dev.azure.com/0dzSy5"
+# "AosWebsiteName"="AOSService"
+# "BinariesPath"="C:\\AOSService\\PackagesLocalDirectory\\Bin"
+# "MetadataPath"="C:\\AOSService\\PackagesLocalDirectory"
+# "PackagesPath"="C:\\AOSService\\PackagesLocalDirectory"
+# "DatabaseName"="AxDB"
+# "DatabaseServer"="localhost"
+# "BackupPath"="C:\\DynamicsBackup"
 
  #>
  
