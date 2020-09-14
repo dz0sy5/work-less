@@ -1,34 +1,33 @@
 ﻿﻿<# Preparation:
-#  Windows updated
-#  Antimalware scan
-#
-# Execute this script:
-# Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
-#$ErrorActionPreference="Stop";If(-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent() ).IsInRole( [Security.Principal.WindowsBuiltInRole] “Administrator”)){ throw "Run command in an administrator PowerShell prompt"};If($PSVersionTable.PSVersion -lt (New-Object System.Version("3.0"))){ throw "The minimum version of Windows PowerShell that is required by the script (3.0) does not match the currently running version of Windows PowerShell." };$DefaultProxy=[System.Net.WebRequest]::DefaultWebProxy;$securityProtocol=@();$securityProtocol+=[Net.ServicePointManager]::SecurityProtocol;$securityProtocol+=[Net.SecurityProtocolType]::Tls12;[Net.ServicePointManager]::SecurityProtocol=$securityProtocol;Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
-#
-#ToDo:
-#  Change Hostname 
-#  Check the static IP config
-#  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
-#  Logoff Icon copy it to public Desktop
-#  BUILD VM registry configuration
-# add ENV path to the EnvironmentVariablepath
+    #  Windows updated
+    #  Antimalware scan
+    #
+    # Execute this script:
+    # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
+    #$ErrorActionPreference="Stop";If(-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent() ).IsInRole( [Security.Principal.WindowsBuiltInRole] “Administrator”)){ throw "Run command in an administrator PowerShell prompt"};If($PSVersionTable.PSVersion -lt (New-Object System.Version("3.0"))){ throw "The minimum version of Windows PowerShell that is required by the script (3.0) does not match the currently running version of Windows PowerShell." };$DefaultProxy=[System.Net.WebRequest]::DefaultWebProxy;$securityProtocol=@();$securityProtocol+=[Net.ServicePointManager]::SecurityProtocol;$securityProtocol+=[Net.SecurityProtocolType]::Tls12;[Net.ServicePointManager]::SecurityProtocol=$securityProtocol;Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
+    #
+    #ToDo:
+    #  Change Hostname 
+    #  Check the static IP config
+    #  Implement the server roles (DEV, BUILD, DEV Test, GOLD, etc..)
+    #  Logoff Icon copy it to public Desktop
+    #  BUILD VM registry configuration
+    # add ENV path to the EnvironmentVariablepath
 
+    #reg key for BUILD
+    #  Windows Registry Editor Version 5.00
 
-#  Windows Registry Editor Version 5.00
-
-# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
-# "DynamicsSDK"="C:\\DynamicsSDK"
-# "TeamFoundationServerUrl"="https://dev.azure.com/0dzSy5"
-# "AosWebsiteName"="AOSService"
-# "BinariesPath"="C:\\AOSService\\PackagesLocalDirectory\\Bin"
-# "MetadataPath"="C:\\AOSService\\PackagesLocalDirectory"
-# "PackagesPath"="C:\\AOSService\\PackagesLocalDirectory"
-# "DatabaseName"="AxDB"
-# "DatabaseServer"="localhost"
-# "BackupPath"="C:\\DynamicsBackup"
-
- #>
+    # [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
+    # "DynamicsSDK"="C:\\DynamicsSDK"
+    # "TeamFoundationServerUrl"="https://dev.azure.com/dz0Sy5"
+    # "AosWebsiteName"="AOSService"
+    # "BinariesPath"="C:\\AOSService\\PackagesLocalDirectory\\Bin"
+    # "MetadataPath"="C:\\AOSService\\PackagesLocalDirectory"
+    # "PackagesPath"="C:\\AOSService\\PackagesLocalDirectory"
+    # "DatabaseName"="AxDB"
+    # "DatabaseServer"="localhost"
+    # "BackupPath"="C:\\DynamicsBackup"
+#>
  
 #region Vars
 
@@ -472,5 +471,3 @@ ForEach ($res in Get-Partition) {
 DownloadFilesFromGitHub -Owner $Owner -Repository $Repository -Path $Path -DestinationPath $DestinationPath
 
 #endregion
-
-
