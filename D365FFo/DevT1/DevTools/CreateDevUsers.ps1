@@ -209,22 +209,22 @@ foreach ($node in $xml.configuration.appSettings.add) {
 foreach ($user in $users) {
 
     $pieces = $user -split '@'
-
     $FullName = $pieces[0] -replace "\.", " " 
     $Names = $pieces[0] -split "\." 
-
     $name = ($names[0])[0] + $Names[1] 
-
-
     $Password = ConvertTo-SecureString $pass -AsPlainText -Force
-    New-LocalUser -Name $name -AccountNeverExpires -Password $Password -FullName $FullName -Description $user -PasswordNeverExpires 
 
-    Write-Host "User: $name was succesfully created" -ForegroundColor Green -
-
-    #add to administrators
-    Add-LocalGroupMember -Group "Administrators" -Member $name
- 
-    Write-Host "User: $name was succesfully added to local Administrators group" -ForegroundColor Green 
+    if (Get-LocalUser -Name $name) {
+        Write-Host "User: $name is already created" -ForegroundColor Green 
+    }
+    Else {
+        New-LocalUser -Name $name -AccountNeverExpires -Password $Password -FullName $FullName -Description $user -PasswordNeverExpires 
+        Write-Host "User: $name was succesfully created" -ForegroundColor Green 
+    
+        #add to administrators
+        Add-LocalGroupMember -Group "Administrators" -Member $name
+        Write-Host "User: $name was succesfully added to local Administrators group" -ForegroundColor Green 
+    }
 
     $DOMAIN = HOSTNAME
     Write-Host "Provision DB USER" 
