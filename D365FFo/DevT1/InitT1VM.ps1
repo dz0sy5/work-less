@@ -121,16 +121,13 @@ Else {
 
 
     $packages = @(
-        #"microsoftazurestorageexplorer"  - TODO: The current package has a bad checksum, test again later
-        #"azurepowershell"
-        #"azure-cli"
-        #"winmerge"
-        #"python"
+        "dotnet4.7.2"
         "vscode"
         "vscode-mssql"
         #"vscode-azurerm-tools"
         "peazip"
         "microsoft-edge"
+        "windirstat"
         "notepadplusplus.install"
         #"git.install"
         #"sysinternals"
@@ -294,6 +291,11 @@ $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($env:HOMEDRIVE + $env:HOMEPATH + "\Desktop\logoff.lnk")
 $Shortcut.TargetPath = "C:\Windows\System32\logoff.exe"
 $Shortcut.Save()
+
+#move the shortcut for all users
+#C:\Users\Public\Desktop - Local VHD
+$source = ($env:HOMEDRIVE + $env:HOMEPATH + "\Desktop\logoff.lnk")
+Move-item -path $source -Destination "C:\Users\Public\Desktop\"
 
 #endregion
 
