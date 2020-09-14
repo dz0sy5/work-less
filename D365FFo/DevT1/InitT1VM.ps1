@@ -1,4 +1,4 @@
-﻿﻿# Preparation:
+﻿﻿<# Preparation:
 #  Windows updated
 #  Antimalware scan
 #
@@ -14,7 +14,7 @@
 #  BUILD VM registry configuration
 # add ENV path to the EnvironmentVariablepath
 
-<#
+
  Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\AX\7.0\SDK]
@@ -27,6 +27,7 @@
 "DatabaseName"="AxDB"
 "DatabaseServer"="localhost"
 "BackupPath"="C:\\DynamicsBackup"
+
  #>
  
 #region Vars
