@@ -25,7 +25,7 @@ Function ProvisionDBUser {
     # Check if the current user has admin privileges. User must be an administrator or part of builtin\administrators group
     #
     Try {
-        $AdminUsers = invoke-command { net localgroup administrators | where { $_ -AND $_ -notmatch "command completed successfully" } |  select -skip 4 }
+        $AdminUsers = invoke-command { net localgroup administrators | Where-Object { $_ -AND $_ -notmatch "command completed successfully" } |  Select-Object -skip 4 }
 
         $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
         $principal = New-Object Security.Principal.WindowsPrincipal -ArgumentList $identity

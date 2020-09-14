@@ -39,9 +39,10 @@ $DestinationPath = 'C:\Scripts'
 #endregion
 
 #set tls 1.2
-Write-Host "Update the TLS settings"
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
+if ([Net.ServicePointManager]::SecurityProtocol -ne 'Tls12') {
+    Write-Host "Update the TLS settings"
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+}
 
 #region Functions to be used by the script
 
