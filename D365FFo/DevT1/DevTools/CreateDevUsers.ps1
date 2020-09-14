@@ -6,6 +6,9 @@ Param (
     $Pass = "pass@word1"
 )
 
+#todo
+#add condition when user is already created and present
+
 Import-Module d365fo.tools -ErrorAction SilentlyContinue
 
 Function ProvisionDBUser {

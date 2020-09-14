@@ -77,11 +77,22 @@ function DownloadFilesFromGitHub {
             throw "Could not create path '$DestinationPath'!"
         }
     }
+    Else {
+        # Destination path exist, recreate
+        try {
+            Remove-Item -Path $DestinationPath -Force 
+            New-Item -Path $DestinationPath -ItemType Directory -ErrorAction Stop
+        }
+        catch {
+            throw "Could not create path '$DestinationPath'!"
+        }
+
+    }
     
     foreach ($file in $files) {
         $fileDestination = Join-Path $DestinationPath (Split-Path $file -Leaf)
         try {
-            Invoke-WebRequest -Uri $file -OutFile $fileDestination -ErrorAction Stop -Verbose
+            Invoke-WebRequest -Uri $file -OutFile $fileDestination -ErrorAction Stop -Verbose 
             "Grabbed '$($file)' to '$fileDestination'"
         }
         catch {
