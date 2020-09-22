@@ -8,11 +8,24 @@ Param (
 Import-Module dbatools
 Import-Module d365fo.tools
 
-$NewDBName = "AxDB_restored"
+$NewDBName = "AxDB"
+$Date = Get-Date -format "yyyyMMdd"
+$timenow = Get-date -Format "HHMM"
+$name = $NewDBName + "_" + $Date+ "_" + $timenow
+
+
+$BackupInfo = Get-DbaBackupInformation -Path $BackupFilePath -SqlInstance .
+$BackupInfo.FileList | %{If ($_.Type -eq "D") { $LogicaData = $_.LogicalName}
+Elseif ($_.Type -eq "L") {$LogicalLog = $_.LogicalName}
+}
+
+$FileStructure = @{
+ "$LogicaData" = "C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\DATA\$name.mdf"
+ "$LogicalLog" = "C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\DATA\$name.ldf"
+ }
 
 #restore DB from File
-Restore-DbaDatabase -SqlInstance . -Path $BackupFilePath -DatabaseName $NewDBName -ReplaceDbNameInFile
-Rename-DbaDatabase -SqlInstance . -Database $NewDBName -LogicalName "<DBN>_<FT>"
+Restore-DbaDatabase -SqlInstance . -Path $BackupFilePath -DatabaseName $name -ReplaceDbNameInFile -FileMapping $FileStructure -WithReplace
 
 
 #stop ENV

@@ -214,7 +214,7 @@ foreach ($user in $users) {
     $name = ($names[0])[0] + $Names[1] 
     $Password = ConvertTo-SecureString $pass -AsPlainText -Force
 
-    if (Get-LocalUser -Name $name) {
+    if (Get-LocalUser -Name $name -ErrorAction SilentlyContinue) {
         Write-Host "User: $name is already created" -ForegroundColor Green 
     }
     Else {
