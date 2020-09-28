@@ -121,7 +121,7 @@ If (Test-Path -Path "$env:ProgramData\Chocolatey") {
 }
 Else {
 
-    Write-Host “Installing Chocolatey”
+    Write-Host "Installing Chocolatey"
  
     [System.Net.WebRequest]::DefaultWebProxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
     iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
@@ -157,7 +157,7 @@ Else {
     # Install each program
     foreach ($packageToInstall in $packages) {
 
-        Write-Host “Installing $packageToInstall” -ForegroundColor Green
+        Write-Host "Installing $packageToInstall" -ForegroundColor Green
         & $chocoExePath "install" $packageToInstall "-y" "-r"
     }
 }
@@ -258,16 +258,16 @@ Function Execute-Sql {
     }
 }
 
-If (Test-Path “HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQL”) {
+If (Test-Path "HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQL") {
 
-    Write-Host “Installing dbatools PowerShell module”
+    Write-Host "Installing dbatools PowerShell module"
     Install-Module -Name dbatools -SkipPublisherCheck -Scope AllUsers
 
-    Write-Host “Installing Ola Hallengren's SQL Maintenance scripts”
+    Write-Host "Installing Ola Hallengren's SQL Maintenance scripts"
     Import-Module -Name dbatools
     Install-DbaMaintenanceSolution -SqlInstance . -Database master
 
-    Write-Host “Running Ola Hallengren's IndexOptimize tool”
+    Write-Host "Running Ola Hallengren's IndexOptimize tool"
 
 
     $sql = "EXECUTE master.dbo.IndexOptimize
@@ -284,7 +284,7 @@ If (Test-Path “HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQ
     Execute-Sql -server "." -database "master" -command $sql
 }
 Else {
-    Write-Verbose “SQL not installed.  Skipped Ola Hallengrens index optimization”
+    Write-Verbose "SQL not installed.  Skipped Ola Hallengrens index optimization"
 }
 
 #endregion
@@ -305,7 +305,7 @@ Write-Host "Setting power settings to High Performance"
 powercfg.exe /SetActive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 
 # Create Logoff Icon and copy it to public Desktop
-Write-Host “Creating logoff icon on desktop of the current user”
+Write-Host "Creating logoff icon on desktop of the current user"
 $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($env:HOMEDRIVE + $env:HOMEPATH + "\Desktop\logoff.lnk")
 $Shortcut.TargetPath = "C:\Windows\System32\logoff.exe"
