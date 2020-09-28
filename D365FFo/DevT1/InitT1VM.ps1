@@ -1,4 +1,4 @@
-?<# Preparation:
+<# Preparation:
     #  Windows updated
     #  Antimalware scan
     #
