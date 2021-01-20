@@ -38,7 +38,7 @@ Remove-DbaDatabase -SqlInstance . -Database Axdb_original -Confirm:$false
 }
 
 #Change active DB
-Switch-D365ActiveDatabase -DatabaseServer . -DatabaseName AxDB -SourceDatabaseName $NewDBName 
+Switch-D365ActiveDatabase -DatabaseServer . -DatabaseName AxDB -SourceDatabaseName $name
 
 
 #get-users to be imported in AX
