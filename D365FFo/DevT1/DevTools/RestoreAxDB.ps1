@@ -10,7 +10,7 @@ Import-Module d365fo.tools
 
 $NewDBName = "AxDB"
 $Date = Get-Date -format "yyyyMMdd"
-$timenow = Get-date -Format "HHMM"
+$timenow = Get-date -Format "HHmm"
 $name = $NewDBName + "_" + $Date+ "_" + $timenow
 
 
@@ -38,7 +38,7 @@ Remove-DbaDatabase -SqlInstance . -Database Axdb_original -Confirm:$false
 }
 
 #Change active DB
-Switch-D365ActiveDatabase -DatabaseServer . -DatabaseName AxDB -SourceDatabaseName $NewDBName 
+Switch-D365ActiveDatabase -DatabaseServer . -DatabaseName AxDB -SourceDatabaseName $name 
 
 
 #get-users to be imported in AX
@@ -57,6 +57,9 @@ $FullName = $pieces[0] -replace "\.", " "
 $Names = $pieces[0] -split "\." 
 
 $name = ($names[0])[0] + $Names[1] 
+
+#remove users before reimport
+Remove-D365User  -Email $email -ErrorAction SilentlyContinue
 
 #add user in AX instance
 Import-D365ExternalUser -Id $Name -Name $FullName -Email $Email -DatabaseServer . -DatabaseName AxDB

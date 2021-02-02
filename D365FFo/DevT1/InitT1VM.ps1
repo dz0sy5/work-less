@@ -5,7 +5,8 @@
     # Execute this script:
     # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
     #$ErrorActionPreference="Stop";If(-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent() ).IsInRole( [Security.Principal.WindowsBuiltInRole] "Administrator")){ throw "Run command in an administrator PowerShell prompt"};If($PSVersionTable.PSVersion -lt (New-Object System.Version("3.0"))){ throw "The minimum version of Windows PowerShell that is required by the script (3.0) does not match the currently running version of Windows PowerShell." };$DefaultProxy=[System.Net.WebRequest]::DefaultWebProxy;$securityProtocol=@();$securityProtocol+=[Net.ServicePointManager]::SecurityProtocol;$securityProtocol+=[Net.SecurityProtocolType]::Tls12;[Net.ServicePointManager]::SecurityProtocol=$securityProtocol;Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
-    #
+
+    #$ErrorActionPreference="Stop";If(-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")){ throw "Run command in an administrator PowerShell prompt"};If($PSVersionTable.PSVersion -lt (New-Object System.Version("3.0"))){ throw "The minimum version of Windows PowerShell that is required by the script (3.0) does not match the currently running version of Windows PowerShell." };$DefaultProxy=[System.Net.WebRequest]::DefaultWebProxy;$securityProtocol=@();$securityProtocol+=[Net.ServicePointManager]::SecurityProtocol;$securityProtocol+=[Net.SecurityProtocolType]::Tls12;[Net.ServicePointManager]::SecurityProtocol=$securityProtocol;Register-PSRepository -Default -ErrorAction SilentlyContinue; Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted;Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
     #ToDo:
     #  Change Hostname 
     #  Check the static IP config
@@ -19,6 +20,21 @@
     # automatic import DEV test users from DEV OPS
     # azure Storage configuration (conf file 127.0.0.1 change with the static IP)
     # Add the confgiuration in WEB CONFIG for DEV test sytem
+    #update the storage emulator file with
+
+            cd "C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator"
+
+            tasklist /FI "IMAGENAME eq AzureStorageEmulator.exe" 
+
+            SETLOCAL EnableExtensions
+            set EXE=AzureStorageEmulator.exe
+            FOR /F %%x IN ('tasklist /NH /FI "IMAGENAME eq %EXE%"') DO IF %%x == %EXE% goto FOUND
+            echo Not running, starting
+            AzureStorageEmulator.exe start
+            goto FIN
+            :FOUND
+            echo Already Running
+            :FIN
 
     #reg key for BUILD
     #  Windows Registry Editor Version 5.00
@@ -50,7 +66,7 @@ if ([Net.ServicePointManager]::SecurityProtocol -ne 'Tls12') {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 }
 
-#region Functions to be used by the script
+#region github download function to be used by the script
 
 function DownloadFilesFromGitHub {
     Param(
@@ -114,54 +130,56 @@ function DownloadFilesFromGitHub {
 #endregion
 
 #region Install additional apps using Chocolatey
+function InstallAdditionalApps {
+    
 
-If (Test-Path -Path "$env:ProgramData\Chocolatey") {
-    choco upgrade chocolatey -y -r
-    choco upgrade all --ignore-checksums -y -r
-}
-Else {
+    If (Test-Path -Path "$env:ProgramData\Chocolatey") {
+        choco upgrade chocolatey -y -r
+        choco upgrade all --ignore-checksums -y -r
+    }
+    Else {
 
-    Write-Host "Installing Chocolatey"
+        Write-Host "Installing Chocolatey"
  
-    [System.Net.WebRequest]::DefaultWebProxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+        [System.Net.WebRequest]::DefaultWebProxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
+        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-    #Determine choco executable location
-    #   This is needed because the path variable is not updated
-    #   This part is copied from https://chocolatey.org/install.ps1
-    $chocoPath = [Environment]::GetEnvironmentVariable("ChocolateyInstall")
-    if ($chocoPath -eq $null -or $chocoPath -eq '') {
-        $chocoPath = "$env:ALLUSERSPROFILE\Chocolatey"
-    }
-    if (!(Test-Path ($chocoPath))) {
-        $chocoPath = "$env:SYSTEMDRIVE\ProgramData\Chocolatey"
-    }
-    $chocoExePath = Join-Path $chocoPath 'bin\choco.exe'
+        #Determine choco executable location
+        #   This is needed because the path variable is not updated
+        #   This part is copied from https://chocolatey.org/install.ps1
+        $chocoPath = [Environment]::GetEnvironmentVariable("ChocolateyInstall")
+        if ($chocoPath -eq $null -or $chocoPath -eq '') {
+            $chocoPath = "$env:ALLUSERSPROFILE\Chocolatey"
+        }
+        if (!(Test-Path ($chocoPath))) {
+            $chocoPath = "$env:SYSTEMDRIVE\ProgramData\Chocolatey"
+        }
+        $chocoExePath = Join-Path $chocoPath 'bin\choco.exe'
 
 
-    $packages = @(
-        "dotnet4.7.2"
-        "vscode"
-        "vscode-mssql"
-        #"vscode-azurerm-tools"
-        "peazip"
-        "microsoft-edge"
-        "windirstat"
-        "notepadplusplus.install"
-        #"git.install"
-        #"sysinternals"
-        "postman"  # or insomnia-rest-api-client
-        "fiddler"
-    )
+        $packages = @(
+            "dotnet4.7.2"
+            "vscode"
+            "vscode-mssql"
+            #"vscode-azurerm-tools"
+            "peazip"
+            "microsoft-edge"
+            "windirstat"
+            "notepadplusplus.install"
+            #"git.install"
+            #"sysinternals"
+            "postman"  # or insomnia-rest-api-client
+            "fiddler"
+        )
 
-    # Install each program
-    foreach ($packageToInstall in $packages) {
+        # Install each program
+        foreach ($packageToInstall in $packages) {
 
-        Write-Host "Installing $packageToInstall" -ForegroundColor Green
-        & $chocoExePath "install" $packageToInstall "-y" "-r"
+            Write-Host "Installing $packageToInstall" -ForegroundColor Green
+            & $chocoExePath "install" $packageToInstall "-y" "-r"
+        }
     }
 }
- 
 #endregion
 
 
@@ -172,7 +190,7 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope AllU
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
 # Installing d365fo.tools
-If ((Find-Module -Name d365fo.tools).InstalledDate -eq $null) {
+If ((Get-Module d365fo.tools -ListAvailable) -eq $null) {
     Write-Host "Installing d365fo.tools"
     Write-Host "    Documentation: https://github.com/d365collaborative/d365fo.tools"
     Install-Module -Name d365fo.tools -SkipPublisherCheck -Scope AllUsers
@@ -260,6 +278,17 @@ Function Execute-Sql {
 
 If (Test-Path "HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQL") {
 
+    # Installing d365fo.tools
+    If ((Get-Module d365fo.tools -ListAvailable) -eq $null) {
+        Write-Host "Installing d365fo.tools"
+        Write-Host "    Documentation: https://github.com/d365collaborative/d365fo.tools"
+        Install-Module -Name d365fo.tools -SkipPublisherCheck -Scope AllUsers
+    }
+    else {
+        Write-Host "Updating d365fo.tools"
+        Update-Module -name d365fo.tools -SkipPublisherCheck -Scope AllUsers
+    }
+
     Write-Host "Installing dbatools PowerShell module"
     Install-Module -Name dbatools -SkipPublisherCheck -Scope AllUsers
 
@@ -291,13 +320,14 @@ Else {
 
 
 #region Update PowerShell Help, power settings, and Logoff icon
-
+function UpdatePowershellHelp {
 Write-Host "Updating PowerShell help"
 $what = ""
 Update-Help  -Force -Ea 0 -Ev what
 If ($what) {
     Write-Warning "Minor error when updating PowerShell help"
     Write-Host $what.Exception
+}
 }
 
 # Set power settings to High Performance
@@ -319,74 +349,73 @@ Move-item -path $source -Destination "C:\Users\Public\Desktop\"
 #endregion
 
 #region Local User Policy
+function ConfigureLocalAdmin {
+    # Set the password to never expire
+    Get-WmiObject Win32_UserAccount -filter "LocalAccount=True" | ? { $_.SID -Like "S-1-5-21-*-500" } | Set-LocalUser -PasswordNeverExpires 1
 
-# Set the password to never expire
-Get-WmiObject Win32_UserAccount -filter "LocalAccount=True" | ? { $_.SID -Like "S-1-5-21-*-500" } | Set-LocalUser -PasswordNeverExpires 1
+    # Disable changing the password
+    $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+    $name = "DisableChangePassword"
+    $value = "1"
 
-# Disable changing the password
-$registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
-$name = "DisableChangePassword"
-$value = "1"
-
-If (!(Test-Path $registryPath)) {
-    New-Item -Path $registryPath -Force | Out-Null
-    New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWORD -Force | Out-Null
-}
-Else {
-    $passwordChangeRegKey = Get-ItemProperty -Path $registryPath -Name $Name -ErrorAction SilentlyContinue
-
-    If (-Not $passwordChangeRegKey) {
+    If (!(Test-Path $registryPath)) {
+        New-Item -Path $registryPath -Force | Out-Null
         New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWORD -Force | Out-Null
     }
     Else {
-        Set-ItemProperty -Path $registryPath -Name $name -Value $value
+        $passwordChangeRegKey = Get-ItemProperty -Path $registryPath -Name $Name -ErrorAction SilentlyContinue
+
+        If (-Not $passwordChangeRegKey) {
+            New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWORD -Force | Out-Null
+        }
+        Else {
+            Set-ItemProperty -Path $registryPath -Name $name -Value $value
+        }
     }
 }
-
 #endregion
 
 #region Configure Windows Updates when Windows 10
+Function ConfigureWindowsUpdates {
+    if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows 10*") {
 
-if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows 10*") {
+        #Write-Host "Changing Windows Updates to -Notify to schedule restart-"
+        #Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings -Name UxOption -Type DWord -Value 1
 
-    #Write-Host "Changing Windows Updates to -Notify to schedule restart-"
-    #Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings -Name UxOption -Type DWord -Value 1
-
-    Write-Host "Disabling P2P Update downlods outside of local network"
-    Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config -Name DODownloadMode -Type DWord -Value 1
-    Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization -Name SystemSettingsDownloadMode -Type DWord -Value 3
+        Write-Host "Disabling P2P Update downlods outside of local network"
+        Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config -Name DODownloadMode -Type DWord -Value 1
+        Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization -Name SystemSettingsDownloadMode -Type DWord -Value 3
+    }
 }
-
 #endregion
 
 
 #region Remove Windows 10 Metro apps
+function RemoveWindowsApps {
+    if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows 10*") {
 
+        # Windows 10 Metro App Removals
+        # These start commented out so you choose
 
-if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows 10*") {
-
-    # Windows 10 Metro App Removals
-    # These start commented out so you choose
-
-    Write-Host "Removing Metro Apps"
-    Get-AppxPackage king.com.CandyCrushSaga | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingWeather | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingSports | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingFinance | Remove-AppxPackage
-    Get-AppxPackage Microsoft.XboxApp | Remove-AppxPackage
-    Get-AppxPackage Microsoft.WindowsPhone | Remove-AppxPackage
-    Get-AppxPackage Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage
-    Get-AppxPackage Microsoft.People | Remove-AppxPackage
-    Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage
-    Get-AppxPackage Microsoft.ZuneVideo | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Office.OneNote | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Windows.Photos | Remove-AppxPackage
-    Get-AppxPackage Microsoft.WindowsSoundRecorder | Remove-AppxPackage
-    Get-AppxPackage microsoft.windowscommunicationsapps | Remove-AppxPackage
-    Get-AppxPackage Microsoft.SkypeApp | Remove-AppxPackage
+        Write-Host "Removing Metro Apps"
+        Get-AppxPackage king.com.CandyCrushSaga | Remove-AppxPackage
+        Get-AppxPackage Microsoft.BingWeather | Remove-AppxPackage
+        Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage
+        Get-AppxPackage Microsoft.BingSports | Remove-AppxPackage
+        Get-AppxPackage Microsoft.BingFinance | Remove-AppxPackage
+        Get-AppxPackage Microsoft.XboxApp | Remove-AppxPackage
+        Get-AppxPackage Microsoft.WindowsPhone | Remove-AppxPackage
+        Get-AppxPackage Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage
+        Get-AppxPackage Microsoft.People | Remove-AppxPackage
+        Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage
+        Get-AppxPackage Microsoft.ZuneVideo | Remove-AppxPackage
+        Get-AppxPackage Microsoft.Office.OneNote | Remove-AppxPackage
+        Get-AppxPackage Microsoft.Windows.Photos | Remove-AppxPackage
+        Get-AppxPackage Microsoft.WindowsSoundRecorder | Remove-AppxPackage
+        Get-AppxPackage microsoft.windowscommunicationsapps | Remove-AppxPackage
+        Get-AppxPackage Microsoft.SkypeApp | Remove-AppxPackage
+    }
 }
-
 #endregion
 
 
