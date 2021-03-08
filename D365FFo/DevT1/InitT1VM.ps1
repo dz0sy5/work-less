@@ -116,7 +116,7 @@ function DownloadFilesFromGitHub {
     Else {
         # Destination path exist, recreate
         try {
-            Remove-Item -Path $DestinationPath -Force 
+            Remove-Item -Path $DestinationPath -Force -Recurse
             New-Item -Path $DestinationPath -ItemType Directory -ErrorAction Stop
         }
         catch {
