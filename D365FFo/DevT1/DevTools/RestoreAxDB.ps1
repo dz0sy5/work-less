@@ -52,8 +52,7 @@ else {
 	#Change active DB
 	Switch-D365ActiveDatabase -DatabaseServer . -DatabaseName AxDB -SourceDatabaseName $name 
 
-
-	#get-users to be imported in AX
+#get-users to be imported in AX
 	$users = Get-LocalUser
 
 	#get the email addresses
