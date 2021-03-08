@@ -465,12 +465,7 @@ function ConfigureBackup {
         New-Item -Path $env:HOMEDRIVE\BackupShared -ItemType directory
 
     }
-    #create a share for the backup if not present
-    If (!(Get-SmbShare -Name BackupShared -ErrorAction SilentlyContinue)) {
-        New-SmbShare -Name "BackupShared" -Path "$env:HOMEDRIVE\BackupShared" -ChangeAccess "Users" -FullAccess "Administrators"
-    }
-
-   
+   #SQL jobs   
     $DailyBackupJob = "
 DECLARE @jobId BINARY(16)
 EXEC  msdb.dbo.sp_add_job @job_name=N'Backup - full - axdb - daily', 
@@ -526,6 +521,11 @@ EXEC  msdb.dbo.sp_add_jobschedule @job_id=@jobId, @name=N'daily',
 EXEC  msdb.dbo.sp_add_jobserver @job_id = @jobId, @server_name = N'(local)'
 "
     Execute-Sql -server "." -database "master" -command $DailyBackupJob
+
+     #create a share for the backup if not present
+     If (!(Get-SmbShare -Name BackupShared -ErrorAction SilentlyContinue)) {
+        New-SmbShare -Name "BackupShared" -Path "$env:HOMEDRIVE\BackupShared\$env:COMPUTERNAME\AxDB\FULL\" -ChangeAccess "Users" -FullAccess "Administrators"
+    }
 }
 
 
