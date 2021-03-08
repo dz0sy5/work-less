@@ -1,6 +1,9 @@
+<# temp
 parm (
     $ServerRole,$AdminPassword
 )
+#>
+
 <# Preparation:
     #  Windows updated
     #  Antimalware scan
