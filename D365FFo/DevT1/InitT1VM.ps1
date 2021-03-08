@@ -641,7 +641,7 @@ Function Start-DiskDefrag {
 }
 
 # Loop through the disks and defrag each one
-ForEach ($res in Get-Partition) {
+<# ForEach ($res in Get-Partition) {
     $dl = $res.DriveLetter
     If ($dl -ne $null -and $dl -ne "") {
         Write-Host "Defraging disk $dl"
@@ -651,6 +651,7 @@ ForEach ($res in Get-Partition) {
        # Start-DiskDefrag $dl
     }
 }
+#>
 #endregion
 
 #region Configure DEV users permissions read to DEV test
