@@ -671,7 +671,7 @@ $users = Get-LocalUser
 
 function SetEnvVariables {
     
-    if(!(Get-ChildItem env:devtest)){
+    if(!(Get-ChildItem env:devtest -ErrorAction SilentlyContinue)){
         [System.Environment]::SetEnvironmentVariable('devtest','\\$devtest\BackupShared',[System.EnvironmentVariableTarget]::Machine)
     }
 }
