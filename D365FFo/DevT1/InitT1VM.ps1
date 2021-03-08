@@ -671,8 +671,15 @@ $users = Get-LocalUser
 
 function SetEnvVariables {
     
+    if(!$devtest){
+        $devtest = Read-Host "Please enter the ip of the DevTest system: "
+    }
+    
     if(!(Get-ChildItem env:devtest -ErrorAction SilentlyContinue)){
         [System.Environment]::SetEnvironmentVariable('devtest','\\$devtest\BackupShared',[System.EnvironmentVariableTarget]::Machine)
+    }
+    else {
+        Write-Host "ENV Var already set"
     }
 }
 
