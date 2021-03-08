@@ -6,7 +6,7 @@
     # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
     #$ErrorActionPreference="Stop";If(-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent() ).IsInRole( [Security.Principal.WindowsBuiltInRole] "Administrator")){ throw "Run command in an administrator PowerShell prompt"};If($PSVersionTable.PSVersion -lt (New-Object System.Version("3.0"))){ throw "The minimum version of Windows PowerShell that is required by the script (3.0) does not match the currently running version of Windows PowerShell." };$DefaultProxy=[System.Net.WebRequest]::DefaultWebProxy;$securityProtocol=@();$securityProtocol+=[Net.ServicePointManager]::SecurityProtocol;$securityProtocol+=[Net.SecurityProtocolType]::Tls12;[Net.ServicePointManager]::SecurityProtocol=$securityProtocol;Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
 
-    #$ErrorActionPreference="Stop";If(-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")){throw "Run command in an administrator PowerShell prompt"};If($PSVersionTable.PSVersion -lt (New-Object System.Version("3.0"))){ throw "The minimum version of Windows PowerShell that is required by the script (3.0) does not match the currently running version of Windows PowerShell." };$DefaultProxy=[System.Net.WebRequest]::DefaultWebProxy;$securityProtocol=@();$securityProtocol+=[Net.ServicePointManager]::SecurityProtocol;$securityProtocol+=[Net.SecurityProtocolType]::Tls12;[Net.ServicePointManager]::SecurityProtocol=$securityProtocol;Register-PSRepository -Default -ErrorAction SilentlyContinue; Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted;Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/master/D365FFo/DevT1/InitT1VM.ps1'))
+    #$ErrorActionPreference="Stop";If(-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")){throw "Run command in an administrator PowerShell prompt"};If($PSVersionTable.PSVersion -lt (New-Object System.Version("3.0"))){ throw "The minimum version of Windows PowerShell that is required by the script (3.0) does not match the currently running version of Windows PowerShell." };$DefaultProxy=[System.Net.WebRequest]::DefaultWebProxy;$securityProtocol=@();$securityProtocol+=[Net.ServicePointManager]::SecurityProtocol;$securityProtocol+=[Net.SecurityProtocolType]::Tls12;[Net.ServicePointManager]::SecurityProtocol=$securityProtocol;Register-PSRepository -Default -ErrorAction SilentlyContinue; Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted;Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/dz0sy5/work-less/DEV/D365FFo/DevT1/InitT1VM.ps1'))
     #ToDo:
     #  Change Hostname 
     #  Check the static IP config
@@ -259,11 +259,11 @@ function StandardConfiguration {
     If ($null -eq (Get-Module d365fo.tools -ListAvailable)) {
         Write-Host "Installing d365fo.tools"
         Write-Host "    Documentation: https://github.com/d365collaborative/d365fo.tools"
-        Install-Module -Name d365fo.tools -SkipPublisherCheck -Scope AllUsers
+        Install-Module -Name d365fo.tools  -Scope AllUsers
     }
     else {
         Write-Host "Updating d365fo.tools"
-        Update-Module -name d365fo.tools -SkipPublisherCheck -Scope AllUsers
+        Update-Module -name d365fo.tools -Scope AllUsers
     }
 
     #endregion
@@ -535,11 +535,11 @@ function OlaHallengrens {
         If ($null -eq (Get-Module dbatools -ListAvailable)) {
             Write-Host "Installing dbatools"
             Write-Host "    Documentation: https://dbatools.io/"
-            Install-Module -Name dbatools -SkipPublisherCheck -Scope AllUsers
+            Install-Module -Name dbatools  -Scope AllUsers
         }
         else {
             Write-Host "Updating dbatools"
-            Update-Module -name dbatools -SkipPublisherCheck -Scope AllUsers
+            Update-Module -name dbatools -Scope AllUsers
         }
 
         Write-Host "Installing Ola Hallengren's SQL Maintenance scripts"
