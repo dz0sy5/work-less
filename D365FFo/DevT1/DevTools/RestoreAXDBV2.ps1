@@ -5,7 +5,7 @@ Param (
 )
 
 if ($BackupFilePath -eq "devtest") {
-	$BackupFile = Get-ChildItem -Path $env:devtest  -Filter "*.bak" | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1
+	$BackupFile = Get-ChildItem -Path $env:devtest  -Filter "*.bak" -Recurse| Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1
 	$BackupFilePath = $env:devtest + "\" + $BackupFileFull.Name
 }
 else {
