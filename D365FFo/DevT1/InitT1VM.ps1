@@ -660,8 +660,8 @@ function ConfigureDevUsersInDevTEST {
     param (
         $DevTESTServerIP
     )
-#get-users to be imported in AX
-$users = Get-LocalUser
+    #get-users to be imported in AX
+    $users = Get-LocalUser
 
 }
 
@@ -671,16 +671,14 @@ $users = Get-LocalUser
 
 function SetEnvVariables {
     
-    if(!$devtest){
+    if (!$devtest) {
         $devtest = Read-Host "Please enter the ip of the DevTest system: "
     }
-    
-    if(!(Get-ChildItem env:devtest -ErrorAction SilentlyContinue)){
-        [System.Environment]::SetEnvironmentVariable('devtest','\\$devtest\BackupShared',[System.EnvironmentVariableTarget]::Machine)
-    }
-    else {
-        Write-Host "ENV Var already set"
-    }
+    #Write-Host "Delete the variable"
+    #[Environment]::SetEnvironmentVariable("devtest", $null ,"Machine")
+    Write-Host "Update the Devtest to: $devtest"
+    [System.Environment]::SetEnvironmentVariable('devtest', "\\$devtest\BackupShared", [System.EnvironmentVariableTarget]::Machine)
+   
 }
 
 #endregion
@@ -760,17 +758,9 @@ switch ($ServerRole) {
         #install the additional apps. 
         InstallAdditionalApps -packages $packages
 
-      
-
-        
 
     }
     build { Write-Host "build" }
     Default { Write-Host "Incorect Selection. The valid server roles are: dev, devtest or build " }
 }
 
-
-#brake time
-Start-Sleep 10000
-
-#endregion
