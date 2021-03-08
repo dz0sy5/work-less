@@ -648,7 +648,7 @@ ForEach ($res in Get-Partition) {
 
         $dl = $dl + ":"
 
-        Start-DiskDefrag $dl
+       # Start-DiskDefrag $dl
     }
 }
 #endregion
