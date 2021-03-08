@@ -255,18 +255,18 @@ function StandardConfiguration {
     #region Installing d365fo.tools
 
     # This is requried by Find-Module, by doing it beforehand we remove some warning messages
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope AllUsers
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
     # Installing d365fo.tools
     If ($null -eq (Get-Module d365fo.tools -ListAvailable)) {
         Write-Host "Installing d365fo.tools"
         Write-Host "    Documentation: https://github.com/d365collaborative/d365fo.tools"
-        Install-Module -Name d365fo.tools  -Scope AllUsers
+        Install-Module -Name d365fo.tools 
     }
     else {
         Write-Host "Updating d365fo.tools"
-        Update-Module -name d365fo.tools -Scope AllUsers
+        Update-Module -name d365fo.tools
     }
 
     #endregion
@@ -538,11 +538,11 @@ function OlaHallengrens {
         If ($null -eq (Get-Module dbatools -ListAvailable)) {
             Write-Host "Installing dbatools"
             Write-Host "    Documentation: https://dbatools.io/"
-            Install-Module -Name dbatools  -Scope AllUsers
+            Install-Module -Name dbatools 
         }
         else {
             Write-Host "Updating dbatools"
-            Update-Module -name dbatools -Scope AllUsers
+            Update-Module -name dbatools
         }
 
         Write-Host "Installing Ola Hallengren's SQL Maintenance scripts"
