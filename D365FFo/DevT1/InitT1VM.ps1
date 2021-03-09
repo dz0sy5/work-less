@@ -465,7 +465,7 @@ function ConfigureBackup {
         New-Item -Path $env:HOMEDRIVE\BackupShared -ItemType directory
 
     }
-   #SQL jobs   
+    #SQL jobs   
     $DailyBackupJob = "
 DECLARE @jobId BINARY(16)
 EXEC  msdb.dbo.sp_add_job @job_name=N'Backup - full - axdb - daily', 
@@ -522,8 +522,8 @@ EXEC  msdb.dbo.sp_add_jobserver @job_id = @jobId, @server_name = N'(local)'
 "
     Execute-Sql -server "." -database "master" -command $DailyBackupJob
 
-     #create a share for the backup if not present
-     If (!(Get-SmbShare -Name BackupShared -ErrorAction SilentlyContinue)) {
+    #create a share for the backup if not present
+    If (!(Get-SmbShare -Name BackupShared -ErrorAction SilentlyContinue)) {
         New-SmbShare -Name "BackupShared" -Path "$env:HOMEDRIVE\BackupShared\$env:COMPUTERNAME\AxDB\FULL\" -ChangeAccess "Users" -FullAccess "Administrators"
     }
 }
@@ -665,6 +665,61 @@ function ConfigureDevUsersInDevTEST {
 
 }
 
+Function Test-RegistryValue {
+    [OutputType('System.Boolean')]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+        
+        [Parameter(Mandatory = $true)]
+        [string]$Name
+    )
+
+    if (Test-Path -Path $Path -PathType Any) {
+        $null -ne (Get-ItemProperty $Path).$Name
+    }
+    else {
+        $false
+    }
+}
+
+$RegSplat = @{
+    Path = "HKLM:\SOFTWARE\Microsoft\Dynamics\Deployment\"
+    Name = "InstallationInfoDirectory"
+}
+
+$RegValue = $( if (Test-RegistryValue @RegSplat) { Join-Path (Get-ItemPropertyValue @RegSplat) "InstallationRecords" } else { "" } )
+$Script:InstallationRecordsDir = $RegValue
+
+Function RemoveRetailFromTopology {
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
+    param (
+        [Parameter(Mandatory = $false, ParameterSetName = 'Default', Position = 1 )]
+        [string] $Path = $InstallationRecordsDir
+    )
+    
+    begin {
+    }
+    
+    process {
+        $servicePath = Join-Path $Path "ServiceModelInstallationRecords"
+        $backupRetail = Join-Path $Path "Backup_RetailInstallationRecords"
+
+        if (!(Test-Path $backupRetail)) {
+            New-Item $backupRetail -ItemType Directory
+        }
+
+        Write-PSFMessage -Level Verbose -Message "Service installation log path is: $servicePath" -Target $servicePath
+        Get-ChildItem -Path $servicePath -Filter "Retail*.xml" -Recurse | Move-Item -Destination $BackupRetail
+
+    }
+    
+    end {
+    }
+}
+
+ 
+
 #endregion
 
 #Region Set ENV VAR
@@ -729,7 +784,7 @@ switch ($ServerRole) {
         #install the additional apps. 
         InstallAdditionalApps -packages $packages
         SetEnvVariables
-
+        RemoveRetailFromTopology
 
     }
     devtest { 
@@ -743,7 +798,7 @@ switch ($ServerRole) {
         #Enabled, Auto download and schedule the install (4) , Every Saturday (7)
         ConfigureWindowsUpdates
         ConfigureSQLandAgent
-
+        RemoveRetailFromTopology
 
         #list of apps to be installed.
         $packages = @(
