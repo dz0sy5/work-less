@@ -402,7 +402,7 @@ Function ConfigureWindowsUpdates {
 
 #region Remove Windows 10 Metro apps
 function RemoveWindowsApps {
-    if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows Server 2016*) {
+    if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows Server 2016*") {
 
         # Windows 10 Metro App Removals
         # These start commented out so you choose
@@ -830,6 +830,7 @@ switch ($ServerRole) {
         InstallAdditionalApps -packages $packages
         SetEnvVariables -ServerRole $ServerRole
         RemoveRetailFromTopology
+        ConfigureBackup
 
     }
     build { Write-Host "build" }
