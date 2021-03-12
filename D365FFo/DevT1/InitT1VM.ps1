@@ -724,13 +724,6 @@ Function RemoveRetailFromTopology {
 
 #Region Set ENV VAR
 
-function FunctionName {
-    param (
-        OptionalParameters
-    )
-    
-}
-
 function SetEnvVariables {
     # Parameter help description
     param ($ServerRole)
