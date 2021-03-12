@@ -739,8 +739,7 @@ function SetEnvVariables {
     else {
         Write-Host "Devtest backup already set to: $env:devtest"
     }
-    
-   
+       
     #save the Value of the Server Role in Vars
     if (!$env:ServerRole) {
         Write-Host "Update the ServerRole to: $ServerRole"
@@ -829,7 +828,8 @@ switch ($ServerRole) {
 
         #install the additional apps. 
         InstallAdditionalApps -packages $packages
-
+        SetEnvVariables -ServerRole $ServerRole
+        RemoveRetailFromTopology
 
     }
     build { Write-Host "build" }
