@@ -22,7 +22,7 @@ else {
 
 	$NewDBName = "AxDB"
 	$Date = Get-Date -format "yyyyMMdd"
-	$timenow = Get-date -Format "HHMM"
+	$timenow = Get-date -Format "HHmm"
 	$name = $NewDBName + "_" + $Date + "_" + $timenow
 
 

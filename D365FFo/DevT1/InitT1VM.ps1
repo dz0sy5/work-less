@@ -724,24 +724,48 @@ Function RemoveRetailFromTopology {
 
 #Region Set ENV VAR
 
-function SetEnvVariables {
+function FunctionName {
+    param (
+        OptionalParameters
+    )
     
-    if (!$devtest) {
-        $devtest = Read-Host "Please enter the ip of the DevTest system: "
-    }
-    #Write-Host "Delete the variable"
-    #[Environment]::SetEnvironmentVariable("devtest", $null ,"Machine")
-    Write-Host "Update the Devtest to: $devtest"
-    [System.Environment]::SetEnvironmentVariable('devtest', "\\$devtest\BackupShared", [System.EnvironmentVariableTarget]::Machine)
+}
+
+function SetEnvVariables {
+    # Parameter help description
+    param ($ServerRole)
+    #set the Dev test information
    
+    if ((!$env:devtest) -and ($ServerRole -eq "dev")) {
+        $devtest = Read-Host "Please enter the ip of the DevTest system: "
+        #Write-Host "Delete the variable"
+        #[Environment]::SetEnvironmentVariable("devtest", $null ,"Machine")
+        Write-Host "Update the Devtest to: $devtest"
+        [System.Environment]::SetEnvironmentVariable('devtest', "\\$devtest\BackupShared", [System.EnvironmentVariableTarget]::Machine)
+    }
+    else {
+        Write-Host "Devtest backup already set to: $env:devtest"
+    }
+    
+   
+    #save the Value of the Server Role in Vars
+    if (!$env:ServerRole) {
+        Write-Host "Update the ServerRole to: $ServerRole"
+        [System.Environment]::SetEnvironmentVariable('ServerRole', "$ServerRole", [System.EnvironmentVariableTarget]::Machine)
+    }
 }
 
 #endregion
 
 
 #region init logic
-
-$ServerRole = Read-Host "Please enter the server role: "
+if ((!$env:ServerRole)) {
+    $ServerRole = Read-Host "Please enter the server role: "
+}
+else {
+    #get the Value from Variables
+    $ServerRole = $env:ServerRole
+}
 
 while (($ServerRole -ne "dev") -and ($ServerRole -ne "devtest") -and ($ServerRole -ne "build")) {
     write-host "The valid server roles are: dev, devtest or build"
@@ -783,7 +807,7 @@ switch ($ServerRole) {
 
         #install the additional apps. 
         InstallAdditionalApps -packages $packages
-        SetEnvVariables
+        SetEnvVariables -ServerRole $ServerRole
         RemoveRetailFromTopology
 
     }
