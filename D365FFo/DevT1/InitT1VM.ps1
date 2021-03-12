@@ -522,6 +522,10 @@ EXEC  msdb.dbo.sp_add_jobserver @job_id = @jobId, @server_name = N'(local)'
 "
     Execute-Sql -server "." -database "master" -command $DailyBackupJob
 
+    #Start a backup of the SQL to create all the folders
+    $jobName = "Backup - full - axdb - daily"
+    Start-DbaAgentJob -SqlInstance . -Job $jobName
+
     #create a share for the backup if not present
     If (!(Get-SmbShare -Name BackupShared -ErrorAction SilentlyContinue)) {
         New-SmbShare -Name "BackupShared" -Path "$env:HOMEDRIVE\BackupShared\$env:COMPUTERNAME\AxDB\FULL\" -ChangeAccess "Users" -FullAccess "Administrators"
