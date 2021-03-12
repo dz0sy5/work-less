@@ -372,11 +372,11 @@ Function ConfigureWindowsUpdates {
 
         Write-Host "Disabling P2P Update downlods outside of local network"
         Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config -Name DODownloadMode -Type DWord -Value 1
-        Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization -Name SystemSettingsDownloadMode -Type DWord -Value 3
+        Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization -Name SystemSettingsDownloadMode -Type DWord -Value 4
     }
     elseif ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows Server 2016*") {
         #set the update to auto download and schedule the install 
-        Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name AUOptions -Value 4
+        Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name AUOptions -Value 3
 
         #Setting the Scheduled Install Day to Tuesday:
         Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name ScheduledInstallDay -Value 7
@@ -402,7 +402,7 @@ Function ConfigureWindowsUpdates {
 
 #region Remove Windows 10 Metro apps
 function RemoveWindowsApps {
-    if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows 10*") {
+    if ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows Server 2016*) {
 
         # Windows 10 Metro App Removals
         # These start commented out so you choose
