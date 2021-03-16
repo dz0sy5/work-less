@@ -376,13 +376,14 @@ Function ConfigureWindowsUpdates {
     }
     elseif ((Get-WmiObject Win32_OperatingSystem).Caption -Like "*Windows Server 2016*") {
         #set the update to auto download and schedule the install 
-        Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name AUOptions -Value 3
+        Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name AUOptions -Value 4
 
         #Setting the Scheduled Install Day to Tuesday:
         Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name ScheduledInstallDay -Value 7
 
-        #Setting the Scheduled Install time to 6 AM:
-        Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name ScheduledInstallTime -Value 0
+        $randtime = Get-Random -Minimum 0 -Maximum 24
+        #Setting the Scheduled Install time to random AM:
+        Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name ScheduledInstallTime -Value $randtime
 
         #old style same result, temporary note
         <#
